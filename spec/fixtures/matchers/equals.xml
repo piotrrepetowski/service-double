@@ -1,0 +1,1 @@
+<matcher type="equals" name="request.method" value="foo" />

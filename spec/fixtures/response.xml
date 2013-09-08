@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+    <body>
+<![CDATA[
+FooBar
+CC
+F
+]]>
+    </body>
+    <statusCode>500</statusCode>
+    <headers>
+        <header>
+            <name>Content-type</name>
+            <value>application/json</value>
+        </header>
+        <header>
+            <name>Cache-Control</name>
+            <value>no-cache, must-revalidate</value>
+        </header>
+    </headers>
+    <sleep>5</sleep>
+</response>

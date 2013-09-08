@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+    <body>
+<![CDATA[
+FooBar
+CC
+F
+@foo.placeholder@
+]]>
+    </body>
+</response>

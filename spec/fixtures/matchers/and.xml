@@ -1,0 +1,4 @@
+<matcher type="and">
+    <matcher type="equals" name="request.method" value="foo" />
+    <matcher type="equals" name="request.result.id" value="8" />
+</matcher>
