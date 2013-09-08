@@ -36,10 +36,12 @@ class LoaderSpec extends ObjectBehavior
         $result[1]->shouldBeAnInstanceOf('\ServiceDouble\Request\Handler');
     }
 
-    function it_treats_second_token_as_path_to_response_file()
+    function it_reads_response_data()
     {
         $result = $this->get($this->_getPath());
         $result[0]->getResponse()->getBody()->shouldReturn('FOO');
+        $result[1]->getResponse()->getBody()->shouldReturn('BAR');
+        $result[1]->getResponse()->getBody()->shouldReturn('FOO');
         $result[1]->getResponse()->getBody()->shouldReturn('BAR');
     }
 

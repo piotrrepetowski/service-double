@@ -29,7 +29,7 @@ class Loader
             foreach ($handlers->handler as $handlerData)
             {
                 $handler = new \ServiceDouble\Request\Handler(
-                    new \ServiceDouble\Response($handlerData['response'])
+                    self::_getResponses($handlerData)
                 );
                 $handler->setMatcher($factory->get($handlerData->matcher->asXML()));
                 $result[] = $handler;
@@ -39,5 +39,24 @@ class Loader
         chdir($currentDir);
 
         return $result;
+    }
+
+    /**
+     *
+     * @param SimpleXMLElement $handlerData
+     * @return \ServiceDouble\Response[]
+     */
+    private static function _getResponses(\SimpleXMLElement $handlerData)
+    {
+        $responses = array();
+        if (isset($handlerData['response']))
+            $responses[] = new \ServiceDouble\Response($handlerData['response']);
+        elseif (isset($handlerData->responses))
+        {
+            foreach ($handlerData->responses->response as $responseData)
+                $responses[] = new \ServiceDouble\Response((string) $responseData);
+        }
+
+        return $responses;
     }
 }

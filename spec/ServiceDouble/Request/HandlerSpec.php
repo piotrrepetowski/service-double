@@ -7,16 +7,20 @@ use Prophecy\Argument;
 
 class HandlerSpec extends ObjectBehavior
 {
-    private $_response;
+    private $_firstResponse;
+
+    private $_secondResponse;
 
     /**
-     * @param \ServiceDouble\Response $response
+     * @param \ServiceDouble\Response $firstResponse
+     * @param \ServiceDouble\Response $secondResponse
      */
-    function let($response)
+    function let($firstResponse, $secondResponse)
     {
-        $this->_response = $response;
+        $this->_firstResponse = $firstResponse;
+        $this->_secondResponse = $secondResponse;
 
-        $this->beConstructedWith($this->_response);
+        $this->beConstructedWith(array($this->_firstResponse, $this->_secondResponse));
     }
 
     function it_is_initializable()
@@ -24,9 +28,25 @@ class HandlerSpec extends ObjectBehavior
         $this->shouldHaveType('ServiceDouble\Request\Handler');
     }
 
-    function it_requires_response_attribute()
+    function it_throws_exception_when_responses_do_not_containt_response_objects()
     {
-        $this->getResponse()->shouldReturn($this->_response);
+        $responses = array(
+            $this->_firstResponse,
+            new \stdClass(),
+        );
+        $this->shouldThrow(new \InvalidArgumentException('Only response objects allowed.'))->during('__construct', array($responses));
+    }
+
+    function it_throws_exception_when_no_response_given()
+    {
+        $this->shouldThrow(new \InvalidArgumentException('At least one response object is required.'))->during('__construct', array(array()));
+    }
+
+    function it_returns_consecutive_responses()
+    {
+        $this->getResponse()->shouldReturn($this->_firstResponse);
+        $this->getResponse()->shouldReturn($this->_secondResponse);
+        $this->getResponse()->shouldReturn($this->_firstResponse);
     }
 
     function it_does_not_match_anything_by_default()
