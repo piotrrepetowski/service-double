@@ -3,15 +3,11 @@
     <handler response="foo_response.xml">
         <matcher type="equals" name="request.method" value="foo" />
     </handler>
-    <handler response="bar_response.xml">
-        <matcher type="equals" name="request.method" value="bar" />
-    </handler>
     <handler>
         <matcher type="equals" name="request.method" value="bar" />
-        <responses strategy="">
+        <responses>
             <response>bar_response.xml</response>
-            <response>bar_response.xml</response>
-            <response>bar_response.xml</response>
+            <response>foo_response.xml</response>
         </responses>
     </handler>
 </handlers>

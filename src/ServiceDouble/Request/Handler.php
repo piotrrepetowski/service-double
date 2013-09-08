@@ -9,9 +9,14 @@ class Handler
 {
 
     /**
-     * @var \ServiceDouble\Response
+     * @var \ServiceDouble\Response[]
      */
-    private $_response;
+    private $_responses = array();
+
+    /**
+     * @var int
+     */
+    private $_index = 0;
 
     /**
      * @var \ServiceDouble\RequestHandler\Matcher
@@ -20,11 +25,19 @@ class Handler
 
     /**
      *
-     * @param \ServiceDouble\Response $response
+     * @param \ServiceDouble\Response[] $response
      */
-    public function __construct(\ServiceDouble\Response $response)
+    public function __construct(array $responses)
     {
-        $this->_response = $response;
+        if (empty($responses))
+            throw new \InvalidArgumentException('At least one response object is required.');
+
+        foreach ($responses as $response)
+        {
+            if (!$response instanceof \ServiceDouble\Response)
+                throw new \InvalidArgumentException('Only response objects allowed.');
+        }
+        $this->_responses = $responses;
 
         $this->_matcher = new None();
     }
@@ -35,7 +48,8 @@ class Handler
      */
     public function getResponse()
     {
-        return $this->_response;
+        $this->_index %= count($this->_responses);
+        return $this->_responses[$this->_index++];
     }
 
     /**
