@@ -1,1 +1,1 @@
-"!https://travis-ci.org/piotrrepetowski/service-double.png!":https://travis-ci.org/piotrrepetowski/service-double
+<img src="https://travis-ci.org/piotrrepetowski/service-double.png" />
