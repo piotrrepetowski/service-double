@@ -4,49 +4,25 @@ namespace spec\ServiceDouble\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Zend\Http\Request;
 
 class HandlerSpec extends ObjectBehavior
 {
     private $_firstResponse;
 
-    private $_secondResponse;
-
     /**
-     * @param \ServiceDouble\Response $firstResponse
-     * @param \ServiceDouble\Response $secondResponse
+     * @param \ServiceDouble\Response\Fake $firstResponse
      */
-    function let($firstResponse, $secondResponse)
+    function let($firstResponse)
     {
         $this->_firstResponse = $firstResponse;
-        $this->_secondResponse = $secondResponse;
 
-        $this->beConstructedWith(array($this->_firstResponse, $this->_secondResponse));
+        $this->beConstructedWith($this->_firstResponse);
     }
 
     function it_is_initializable()
     {
         $this->shouldHaveType('ServiceDouble\Request\Handler');
-    }
-
-    function it_throws_exception_when_responses_do_not_containt_response_objects()
-    {
-        $responses = array(
-            $this->_firstResponse,
-            new \stdClass(),
-        );
-        $this->shouldThrow(new \InvalidArgumentException('Only response objects allowed.'))->during('__construct', array($responses));
-    }
-
-    function it_throws_exception_when_no_response_given()
-    {
-        $this->shouldThrow(new \InvalidArgumentException('At least one response object is required.'))->during('__construct', array(array()));
-    }
-
-    function it_returns_consecutive_responses()
-    {
-        $this->getResponse()->shouldReturn($this->_firstResponse);
-        $this->getResponse()->shouldReturn($this->_secondResponse);
-        $this->getResponse()->shouldReturn($this->_firstResponse);
     }
 
     function it_does_not_match_anything_by_default()
@@ -67,3 +43,4 @@ class HandlerSpec extends ObjectBehavior
         $this->match($requestData)->shouldReturn(true);
     }
 }
+

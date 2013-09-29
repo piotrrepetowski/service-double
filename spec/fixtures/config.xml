@@ -3,11 +3,10 @@
     <handler response="foo_response.xml">
         <matcher type="equals" name="request.method" value="foo" />
     </handler>
-    <handler>
+    <handler response="bar_response.xml">
         <matcher type="equals" name="request.method" value="bar" />
-        <responses>
-            <response>bar_response.xml</response>
-            <response>foo_response.xml</response>
-        </responses>
+    </handler>
+    <handler url="http://localhost:3500">
+        <matcher type="equals" name="request.method" value="baz" />
     </handler>
 </handlers>

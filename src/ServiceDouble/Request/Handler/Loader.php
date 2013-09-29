@@ -2,15 +2,20 @@
 
 namespace ServiceDouble\Request\Handler;
 
+use Zend\Http\Client;
+use Zend\Http\Request;
+use ServiceDouble\Request\Parameters;
+
 class Loader
 {
 
     /**
      * 
      * @param string $path
+     * @param \Zend\Http\Request $request
      * @return array
      */
-    public static function get($path)
+    public static function get($path, Request $request)
     {
         if (!is_readable($path))
             throw new \InvalidArgumentException("File \"{$path}\" is not readable.");
@@ -26,11 +31,22 @@ class Loader
         if (isset($handlers->handler))
         {
             $factory = new \ServiceDouble\Matcher\Factory();
+            $requestParams = new Parameters($request);
             foreach ($handlers->handler as $handlerData)
             {
-                $handler = new \ServiceDouble\Request\Handler(
-                    self::_getResponses($handlerData)
-                );
+                if (isset($handlerData['url']))
+                {
+                    $handler = new \ServiceDouble\Request\Handler\Proxy(
+                        $request,
+                        new Client()
+                    );
+                }
+                else
+                {
+                    $handler = new \ServiceDouble\Request\Handler(
+                        self::_getResponse($handlerData, $requestParams)
+                    );
+                }
                 $handler->setMatcher($factory->get($handlerData->matcher->asXML()));
                 $result[] = $handler;
             }
@@ -44,19 +60,18 @@ class Loader
     /**
      *
      * @param SimpleXMLElement $handlerData
-     * @return \ServiceDouble\Response[]
+     * @param \ServiceDouble\Request\Parameters $requestParams
+     * @return \ServiceDouble\Response\Fake|null
      */
-    private static function _getResponses(\SimpleXMLElement $handlerData)
+    private static function _getResponse(\SimpleXMLElement $handlerData, Parameters $requestParams)
     {
-        $responses = array();
+        $response = null;
         if (isset($handlerData['response']))
-            $responses[] = new \ServiceDouble\Response($handlerData['response']);
-        elseif (isset($handlerData->responses))
         {
-            foreach ($handlerData->responses->response as $responseData)
-                $responses[] = new \ServiceDouble\Response((string) $responseData);
+            $response = new \ServiceDouble\Response\Fake($handlerData['response'], $requestParams);
         }
 
-        return $responses;
+        return $response;
     }
 }
+

@@ -23,47 +23,33 @@ class Facade
 
     /**
      * 
-     * @param string $json
-     * @param \ServiceDouble\Http\Response\Renderer $renderer  [optional] Default set to null.
+     * @param \Zend\Http\Request $request
      */
-    public function handle($json, $renderer = null)
+    public function handle(\Zend\Http\Request $request)
     {
-        if (!is_string($json) || empty($json))
-            throw new \InvalidArgumentException("Json must be a non empty string.");
-    
-        $data = json_decode($json, true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE)
-            throw new \LogicException("Invalid JSON.");
+        $requestParams = new Request\Parameters($request);
 
-        $request = new Request($data, $_SERVER['REQUEST_METHOD']);
-
-        $response = $this->_getResponse($request);
+        $response = $this->_getResponse($requestParams);
         if (!isset($response))
-            throw new \LogicException("Method \"{$data['method']}\" does not have a match.");
+            throw new \LogicException("Request does not have a handler.");
 
-        foreach ($request->getAll() as $name => $value)
-            $response->setPlaceholderValue($name, $value);
-
-        if (is_null($renderer))
-            $renderer = new \ServiceDouble\Response\Renderer\Native();
-
-        $renderer->render($response);
+        $response->send();
     }
 
     /**
      *
-     * @param \ServiceDouble\Request $request
-     * @return \ServiceDouble\Response|null
+     * @param \ServiceDouble\Request\Parameters $request
+     * @return \ServiceDouble\Response\Fake|null
      */
-    private function _getResponse(Request $request)
+    private function _getResponse(Request\Parameters $requestParams)
     {
         foreach ($this->_handlers as $handler)
         {
-            if ($handler->match($request->getAll()))
+            if ($handler->match($requestParams->getAll()))
                 return $handler->getResponse();
         }
 
         return null;
     }
 }
+
