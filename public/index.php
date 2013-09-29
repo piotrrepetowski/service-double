@@ -2,15 +2,15 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$frontHandler = new \ServiceDouble\RequestHandler();
+$request = new \Zend\Http\PhpEnvironment\Request();
 
 $loader = new \ServiceDouble\Request\Loader();
+$facade = new \ServiceDouble\Facade();
 
-foreach ($loader->get(__DIR__ . '/../config/config.ini') as $handler)
+foreach ($loader->get(__DIR__ . '/../config/config.ini', $request) as $handler)
 {
-    $frontHandler->registerHandler($handler);
+    $facade->registerHandler($handler);
 }
 
-$json = file_get_contents('php://input');
+$facade->handle($request);
 
-$frontHandler->handle($json);

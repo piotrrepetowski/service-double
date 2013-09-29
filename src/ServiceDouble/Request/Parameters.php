@@ -1,8 +1,11 @@
 <?php
 
-namespace ServiceDouble;
+namespace ServiceDouble\Request;
 
-class Request
+use \Zend\Http\Request as HttpRequest;
+use \ServiceDouble\Request\Parameters\Reader;
+
+class Parameters
 {
 
     /**
@@ -12,14 +15,16 @@ class Request
 
     /**
      *
-     * @param array $data
-     * @param string $method
+     * @param \Zend\Http\Request $request
      */
-    public function __construct(array $data, $method)
+    public function __construct(HttpRequest $request)
     {
-        $this->_parseRequestVariables($data, $this->_params, 'request.jsonrpc');
+        $this->_params['request.method'] = $request->getMethod();
+        
+        $this->_parseRequestVariables($request->getQuery()->toArray(), $this->_params, 'request.get');
 
-        $this->_params['request.method'] = $method;
+        $reader = new Reader();
+        $this->_parseRequestVariables($reader->read($request), $this->_params, 'request.jsonrpc');
     }
 
     /**
@@ -44,8 +49,9 @@ class Request
     /**
      *
      * @param array $data
-     * @param array $result
+     * @param array &$result
      * @param string $prefix
+     * @return array
      */
     private function _parseRequestVariables($data, array &$result, $prefix)
     {
@@ -70,3 +76,4 @@ class Request
         return is_bool($value) || is_int($value) || is_float($value) || is_string($value);
     }
 }
+

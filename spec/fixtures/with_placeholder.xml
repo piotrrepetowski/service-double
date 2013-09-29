@@ -5,7 +5,7 @@
 FooBar
 CC
 F
-@foo.placeholder@
+@request.jsonrpc.foo@
 ]]>
     </body>
 </response>

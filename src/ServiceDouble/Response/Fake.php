@@ -1,14 +1,23 @@
 <?php
 
-namespace ServiceDouble;
+namespace ServiceDouble\Response;
 
-class Response
+use Zend\Http\PhpEnvironment\Response;
+use Zend\Http\Headers;
+use ServiceDouble\Request\Parameters;
+
+class Fake extends Response
 {
 
     /**
      * @var SimpleXMLElement
      */
     private $_response;
+
+    /**
+     * @var int
+     */
+    private $_sleep = 0;
 
     /**
      * @var array
@@ -18,9 +27,10 @@ class Response
     /**
      * 
      * @param string $path
+     * @param \ServiceDouble\Request\Parameters $requestParams
      * @throws InvalidArgumentException
      */
-    public function __construct($path)
+    public function __construct($path, Parameters $requestParams)
     {
         if (!is_readable($path))
             throw new \InvalidArgumentException("File \"{$path}\" is not readable.");
@@ -32,67 +42,41 @@ class Response
             throw new \InvalidArgumentException("Unable to parse \"{$path}\".");
 
         $this->_response = $response;
-    }
 
-    /**
-     * 
-     * @return string
-     */
-    public function getBody()
-    {
-        return $this->_replacePlaceholders(trim($this->_response->body));
-    }
+        $this->setContent(trim($this->_response->body));
 
-    /**
-     *
-     * @return int
-     */
-    public function getStatusCode()
-    {
         if (isset($this->_response->statusCode))
-            return (int) $this->_response->statusCode;
+            $this->setStatusCode((int) $this->_response->statusCode);
 
-        return \ServiceDouble\Response\StatusCode::OK;
-    }
-
-    /**
-     *
-     * @return \ServiceDouble\Response\Header[]
-     */
-    public function getHeaders()
-    {
-        $result = array();
         if (isset($this->_response->headers))
         {
+            $headers = new Headers();
             foreach ($this->_response->headers->header as $header)
             {
-                $result[] = new \ServiceDouble\Response\Header(trim($header->name), trim($header->value));
+                $headers->addHeaderLine(trim($header->name), trim($header->value));
             }
+            $this->setHeaders($headers);
         }
 
-        return $result;
-    }
-
-    /**
-     *
-     * @return int
-     */
-    public function getSleep()
-    {
         if (isset($this->_response->sleep))
-            return (int) $this->_response->sleep;
+            $this->_sleep = (int) $this->_response->sleep;
 
-        return 0;
+        foreach ($requestParams->getAll() as $name => $value)
+            $this->_placeholders[$name] = $value;
     }
 
-    /**
-     *
-     * @param string $name
-     * @param string $value
-     */
-    public function setPlaceholderValue($name, $value)
+    public function getContent()
     {
-        $this->_placeholders[$name] = $value;
+        $content = parent::getContent();
+        return $this->_replacePlaceholders($content);
+    }
+
+    public function send()
+    {
+        if ($this->_sleep > 0)
+            sleep($this->_sleep);
+
+        return parent::send();
     }
 
     /**

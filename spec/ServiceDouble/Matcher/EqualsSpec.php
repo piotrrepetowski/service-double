@@ -48,6 +48,15 @@ class EqualsSpec extends ObjectBehavior
         $this->match($data)->shouldReturn(false);
     }
 
+    function it_do_not_match_when_values_is_not_present()
+    {
+        $data = array(
+            'foo.test.baz' => 1,
+        );
+
+        $this->match($data)->shouldReturn(false);
+    }
+
     function it_throws_exception_when_name_is_not_non_empty_stirng()
     {
         $names = array(
