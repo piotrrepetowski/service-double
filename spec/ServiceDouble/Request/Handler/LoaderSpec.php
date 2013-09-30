@@ -38,7 +38,7 @@ class LoaderSpec extends ObjectBehavior
         $request->getQuery()->willReturn($parameters);
         $request->getMethod()->willReturn(Request::METHOD_POST);
         $result = $this->get($this->_getPath(), $request);
-        $result->shouldHaveCount(3);
+        $result->shouldHaveCount(2);
     }
 
     /**
@@ -55,7 +55,6 @@ class LoaderSpec extends ObjectBehavior
         $result = $this->get($this->_getPath(), $request);
         $result[0]->shouldBeAnInstanceOf('\ServiceDouble\Request\Handler');
         $result[1]->shouldBeAnInstanceOf('\ServiceDouble\Request\Handler');
-        $result[2]->shouldBeAnInstanceOf('\ServiceDouble\Request\Handler\Proxy');
     }
 
     /**
@@ -95,6 +94,30 @@ class LoaderSpec extends ObjectBehavior
 
         $result = $this->get($this->_getPath('placeholders_config.xml'), $request);
         $result[0]->getResponse()->getBody()->shouldReturn("FooBar\nCC\nF\nFOBABZ");
+    }
+
+    /**
+     * @param \Zend\Http\Request $request
+     * @param \Zend\Stdlib\ParametersInterface $parameters
+     * @param \Zend\Uri\Uri $uri
+     */
+    function it_reads_proxy_handlers($request, $parameters, $uri)
+    {
+        $request->getContent()->willReturn("");
+        $parameters->toArray()->willReturn(array());
+        $request->getQuery()->willReturn($parameters);
+        $request->getMethod()->willReturn(Request::METHOD_POST);
+
+        $uri->getPath()->willReturn('')->shouldBeCalled();
+        $uri->getQuery()->willReturn('')->shouldBeCalled();
+
+        $request->getUri()->willReturn($uri);
+
+        $request->setUri(Argument::type('\Zend\Uri\Uri'))->willReturn($request)->shouldBeCalled();
+
+        $result = $this->get($this->_getPath('config_with_proxy.xml'), $request);
+        $result->shouldHaveCount(1);
+        $result[0]->shouldBeAnInstanceOf('\ServiceDouble\Request\Handler\Proxy');
     }
 
     /**

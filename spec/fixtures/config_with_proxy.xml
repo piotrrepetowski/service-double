@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<handlers>
+    <handler url="http://localhost:3500">
+        <matcher type="equals" name="request.method" value="baz" />
+    </handler>
+</handlers>

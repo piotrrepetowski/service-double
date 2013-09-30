@@ -36,8 +36,14 @@ class Loader
             {
                 if (isset($handlerData['url']))
                 {
+                    $newUri = new \Zend\Uri\Http((string) $handlerData['url']);
+                    $newUri->setPath($request->getUri()->getPath());
+                    $newUri->setQuery($request->getUri()->getQuery());
+                    $newRequest = clone $request;
+                    $newRequest->setUri($newUri);
+
                     $handler = new \ServiceDouble\Request\Handler\Proxy(
-                        $request,
+                        $newRequest,
                         new Client()
                     );
                 }
