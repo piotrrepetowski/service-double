@@ -6,7 +6,7 @@ PID_FILE=$LOG_DIR/service_double.pid
 
 if [ -f $PID_FILE ]
 then
-    echo "Stopping Selenium..."
+    echo "Stopping Service Double..."
     PID=`cat $PID_FILE`
     if kill -9 $PID ;
     then
