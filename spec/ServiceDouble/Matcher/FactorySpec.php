@@ -74,6 +74,13 @@ class FactorySpec extends ObjectBehavior
         $matcher->match(array('request.result.id' => '8'))->shouldReturn(false);
     }
 
+    function it_reads_any_matcher_properties()
+    {
+        $matcher = $this->get($this->_getConfigFromFile('any.xml'));
+
+        $matcher->shouldHaveType('\ServiceDouble\Matcher\Any');
+    }
+
     private function _getConfigFromFile($filename)
     {
         return file_get_contents(realpath(__DIR__ . '/../../fixtures/matchers/' . $filename));

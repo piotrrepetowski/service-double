@@ -28,6 +28,8 @@ class Factory
                 return new Equals((string) $matcher['name'], (string) $matcher['value']);
             case 'and':
                 return new LogicalAnd($this->get($matcher->matcher[0]->asXML()), $this->get($matcher->matcher[1]->asXML()));
+            case 'any':
+                return new Any();
             default:
                 throw new \InvalidArgumentException("Matcher type \"" . $matcher['type'] . "\" is not supported.");
         }
