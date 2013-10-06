@@ -8,6 +8,8 @@ LOG_DIR=`realpath $BASEDIR/../log`
 LOG_FILE=$LOG_DIR/service_double.log
 PID_FILE=$LOG_DIR/service_double.pid
 
+mkdir -p $LOG_DIR
+
 case "${1:-''}" in
     'start')
         if [ -f $PID_FILE ]
